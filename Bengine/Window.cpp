@@ -1,0 +1,64 @@
+#include "Window.h"
+#include "Errors.h"
+
+Window::Window() {
+	_screenHeight = 0;
+	_screenWidth = 0;
+}
+
+Window::~Window() {
+
+}
+
+int Window::createWindow(std::string windowName, int screenWidth, int screenHeight, unsigned int currentFlags) {
+
+	// Check flags for the window
+	Uint32 flags = SDL_WINDOW_OPENGL;
+
+	if (currentFlags & HIDE) {
+		flags = SDL_WINDOW_HIDDEN;
+	}
+
+	if (currentFlags & FULLSCREEN) {
+		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		flags |= SDL_WINDOW_FULLSCREEN;
+	}
+
+	if (currentFlags & BORDERLESS) {
+		flags |= SDL_WINDOW_BORDERLESS;
+	}
+
+	// Create  a new window 
+	_sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth, screenHeight, flags);
+	if (_sdlWindow == nullptr) {
+		fatalError("SDL Window could not be created!");
+	}
+
+	// Set the context for OpenGL
+	SDL_GLContext glContext = SDL_GL_CreateContext(_sdlWindow);
+	if (glContext == nullptr) {
+		fatalError("SDL_GL context could not be created");
+	}
+
+	// Initialize glew 
+	glewExperimental = false;
+	GLenum error = glewInit();
+	if (error != GLEW_OK) {
+		fatalError("Could not initialize glew!");
+	}
+
+	// Get the openGL version
+	std::printf("*** OpenGL Version:%s ***", glGetString(GL_VERSION));
+
+	// Set the background color to blue;
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Enable Vsync
+	SDL_GL_SetSwapInterval(0);
+
+	return 0;
+}
+
+void Window::swapBuffer() {
+	SDL_GL_SwapWindow(_sdlWindow); 
+}

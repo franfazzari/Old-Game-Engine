@@ -23,14 +23,6 @@ void MainGame::run() {
 	// Set the camera position otherwise it loads wrong, not sure why
 	_camera.setPosition(glm::vec2(_screenWidth / 2.0f, _screenWidth / 2.0f));
 
-	//Initialize our sprite (temporary).
-	_sprites.push_back(new Sprite());
-	_sprites.back()->init(_screenWidth/2,_screenWidth/2,_screenWidth/2,_screenWidth/2, "Textures/PNG/wood.png");
-
-	_sprites.push_back(new Sprite());
-	_sprites.back()->init(0.0f, _screenWidth/2, _screenWidth/2, _screenWidth/2, "Textures/PNG/wood.png");
-	//_playerTexture = ImageLoader::loadPNG("Textures/PNG/wood.png");
-
 	gameLoop();
 }
 
@@ -42,6 +34,12 @@ void MainGame::initSystems() {
 
 	// Initialize shaders
 	initShaders();
+
+	// Initialize spriteBatch
+	_spriteBatch.init();
+
+	// Initialize FPSLimiter
+	_fpsLimiter.init(_maxFPS);
 }
 
 void MainGame::initShaders() {
@@ -64,15 +62,13 @@ void MainGame::drawGame() {
 
 	// We are using the texture unit 0
 	glActiveTexture(GL_TEXTURE0);
-
 	// Get the uniform location
 	GLint textureLocation = _colorProgram.getUniformLocation("mySampler");
 	// Tell the shader that the texture is in texture unit 0
 	glUniform1i(textureLocation, 0);
 
 	// Setting up the uniform
-	GLuint timeLocation = _colorProgram.getUniformLocation("time");
-	glUniform1f(timeLocation, _time);
+	
 
 	// Setting the camera matrix uniform
 	GLuint pLocation = _colorProgram.getUniformLocation("P");
@@ -80,11 +76,27 @@ void MainGame::drawGame() {
 
 	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
 
-	// Draw our sprite!
-	for (int i = 0; i < _sprites.size(); i++) {
-		_sprites[i]->draw();
+	_spriteBatch.begin();
+	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
+	glm::vec4 pos(_screenWidth / 2.0f, _screenHeight / 2.0f, 50.0f, 50.0f);
+
+	static GLTexture texture = ResourceManager::getTexture("Textures/PNG/rock_wall.png");
+	if (texture.id == 0) {
+		while (true) {
+
+		}
 	}
-	
+	Color color;
+	color.r = 255;
+	color.g = 255;
+	color.b = 255;	
+	color.a = 255;
+
+	_spriteBatch.draw(pos,uv, texture.id, 0.0f, color);
+
+	_spriteBatch.end();
+
+	_spriteBatch.renderBatch();
 
 	// Unbind the texture
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -97,15 +109,13 @@ void MainGame::drawGame() {
 
 }
 
-
-
 // Main game loop function
 void MainGame::gameLoop() {
 
 	// Will loop until we set _gameState to EXIT
 	while (_gameState != GameState::EXIT) {
 		// Use for frame time measuring
-		float startTicks = SDL_GetTicks();
+		_fpsLimiter.begin();
 
 		processInput();
 		_time += 0.01;
@@ -113,7 +123,8 @@ void MainGame::gameLoop() {
 		_camera.update();
 
 		drawGame();
-		calculateFPS();
+
+		_fps = _fpsLimiter.end();
 
 		// Print once every 10 frames
 		static int frameCounter = 0;
@@ -122,12 +133,6 @@ void MainGame::gameLoop() {
 			std::cout << _fps << std::endl;
 			frameCounter = 0;
 		}
-
-		float frameTicks = SDL_GetTicks() - startTicks;
-		// Limit the fps to the max fps
-		if (1000.0f / _maxFPS > frameTicks) {
-			SDL_Delay(1000.0f / _maxFPS - frameTicks);
-		}
 	}
 }
 
@@ -135,7 +140,7 @@ void MainGame::gameLoop() {
 void MainGame::processInput() {
 
 	// Camera speed indicator
-	const float CAMERA_SPEED = 20.0f;
+	const float CAMERA_SPEED = 5.0f;
 	
 	// Camera scale speed indicator
 	const float SCALE_SPEED = 0.1f;
@@ -160,73 +165,32 @@ void MainGame::processInput() {
 			//std::cout << e.motion.x << " " << e.motion.y << std::endl;
 			break;
 		case SDL_KEYDOWN:
-			switch (e.key.keysym.sym) {
-			case SDLK_w:
-				_camera.setPosition(_camera.getPosition() + glm::vec2(0.0f, CAMERA_SPEED));
-				break;
-			case SDLK_s:
-				_camera.setPosition(_camera.getPosition() + glm::vec2(0.0f, -CAMERA_SPEED));
-				break;
-			case SDLK_a:
-				_camera.setPosition(_camera.getPosition() + glm::vec2(-CAMERA_SPEED, 0.0f));
-				break;
-			case SDLK_d:
-				_camera.setPosition(_camera.getPosition() + glm::vec2(CAMERA_SPEED, 0.0f));
-				break;
-			case SDLK_q:
-				_camera.setScale(_camera.getScale() + SCALE_SPEED);
-				break;
-			case SDLK_e:
-				_camera.setScale(_camera.getScale() - SCALE_SPEED);
-				break;
-			}
+			_inputManager.pressKey(e.key.keysym.sym);
+			break;
+		case SDL_KEYUP:
+			_inputManager.releaseKey(e.key.keysym.sym);
 			break;
 		}
 	}
-
-}
-
-void MainGame::calculateFPS() {
-	// We initialize the array of fps samples
-	static const int NUM_SAMPLES = 10;
-	static float frameTimes[NUM_SAMPLES];
-	static int currentFrame = 0;
-
-
-	// Get the current ticks and the previous ticks
-	static float prevTicks = SDL_GetTicks();
 	
-	float currentTicks;
-	currentTicks = SDL_GetTicks();
-
-	// We calculate the frame time by substracting the previous ticks from the current
-	// Giving us the amount of ticks in between each frame
-	_frameTime = currentTicks - prevTicks;
-	frameTimes[currentFrame % NUM_SAMPLES] = _frameTime;
-
-	prevTicks = currentTicks;
-
-	int count;
-	currentFrame++;
-	if (currentFrame < NUM_SAMPLES) {
-		count = currentFrame;
+	if (_inputManager.isKeyPressed(SDLK_w)) {
+		_camera.setPosition(_camera.getPosition() + glm::vec2(0.0f, CAMERA_SPEED));
 	}
-	else {
-		count = NUM_SAMPLES;
+	if (_inputManager.isKeyPressed(SDLK_s)) {
+		_camera.setPosition(_camera.getPosition() + glm::vec2(0.0f, -CAMERA_SPEED));
+	}
+	if (_inputManager.isKeyPressed(SDLK_a)) {
+		_camera.setPosition(_camera.getPosition() + glm::vec2(-CAMERA_SPEED, 0.0f));
+	}
+	if (_inputManager.isKeyPressed(SDLK_d)) {
+		_camera.setPosition(_camera.getPosition() + glm::vec2(CAMERA_SPEED, 0.0f));
+	}
+	if (_inputManager.isKeyPressed(SDLK_q)) {
+		_camera.setScale(_camera.getScale() + SCALE_SPEED);
 	}
 
-	float frameTimeAverage = 0;
+	if (_inputManager.isKeyPressed(SDLK_e)) {
+		_camera.setScale(_camera.getScale() - SCALE_SPEED);
+	}
 
-	for (int i = 0; i < count; i++) {
-		frameTimeAverage += frameTimes[i];
-	}
-	frameTimeAverage /= count;
-
-	if (frameTimeAverage > 0) {
-		_fps = 1000.0f / frameTimeAverage;
-	}
-	else {
-		_fps = 60.0f;
-	}
-	currentFrame++;
 }

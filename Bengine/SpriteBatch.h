@@ -27,7 +27,13 @@ namespace Bengine {
 	};
 
 	class RenderBatch {
-		 
+	public:
+		RenderBatch(GLuint Offset, GLuint NumVertices, GLuint Texture) : offset(Offset), numVertices(NumVertices), texture(Texture) {
+		}
+		GLuint offset;
+		GLuint numVertices;
+		GLuint texture;
+
 	};
 
 	class SpriteBatch
@@ -47,6 +53,7 @@ namespace Bengine {
 		void renderBatch();
 
 	private:
+		void createRenderBatches();
 		void createVertexArray();
 		void sortGlyphs();
 
@@ -60,6 +67,7 @@ namespace Bengine {
 		GlyphSortType _sortType;
 
 		std::vector<Glyph*> _glyphs;
+		std::vector<RenderBatch> _renderBatches;
 
 	};
 }

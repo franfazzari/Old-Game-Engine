@@ -5,6 +5,7 @@
 in vec2 vertexPosition;
 in vec4 vertexColor;
 in vec2 vertexUV;
+in vec4 cameraMatrix;
 
 out vec4 fragmentColor;
 out vec2 fragmentPosition;
@@ -22,7 +23,7 @@ void main(){
 	// Indicate that the coordinates are normalized
 	gl_Position.w = 1.0;
 	
-	fragmentPosition = vertexPosition;
+	fragmentPosition = (cameraMatrix * vec4(vertexPosition, 0.0, 1.0)).xy;
 	
 	fragmentColor = vertexColor;
 	

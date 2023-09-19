@@ -4,7 +4,7 @@ namespace Bengine {
 		_position(0.0f, 0.0f),
 		_cameraMatrix(1.0f),
 		_orthoMatrix(1.0f),
-		_scale(1.0f), _updated(true),
+		_scale(1.0f), _updated(false),
 		_screenWidth(500),
 		_screenHeight(500)
 	{
@@ -31,7 +31,7 @@ namespace Bengine {
 			_cameraMatrix = glm::translate(_orthoMatrix, translate);
 
 			// Camera Scale
-			glm:glm::vec3 scale(_scale, _scale, 0.0f);
+			glm::vec3 scale(_scale, _scale, 0.0f);
 			_cameraMatrix = glm::scale(glm::mat4(1.0f), scale) * _cameraMatrix;
 
 			_updated = true;

@@ -11,7 +11,12 @@
 #include "Bengine/Errors.h"
 #include "Bengine/GLSLProgram.h"
 #include "Bengine/GLTexture.h"
+#include "Bengine/SpriteBatch.h"
+#include "Bengine/ResourceManager.h"
+#include "Bengine/InputManager.h"
+#include "Bengine/Timing.h"
 
+#include <SDL_image.h>
 
 // SCreen dimension constants
 const int SCREEN_WIDTH = 1024;
@@ -35,7 +40,7 @@ private:
 	void gameLoop();
 	void processInput();
 	void drawGame();
-	void calculateFPS();
+
 
 	Window _window;
 
@@ -43,13 +48,14 @@ private:
 	int _screenHeight = SCREEN_HEIGHT;
 	int _screenWidth = SCREEN_WIDTH;
 
-
-	std::vector <Sprite*> _sprites;
-
 	GLSLProgram _colorProgram;
 	Bengine::Camera2D _camera;
 
-	float _frameTime;
+	Bengine::SpriteBatch _spriteBatch;
+
+	Bengine::InputManager _inputManager;
+	Bengine::FPSLimiter _fpsLimiter;
+
 	float _fps;
 	float _maxFPS;
 

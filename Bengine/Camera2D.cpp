@@ -18,6 +18,8 @@ namespace Bengine {
 		_screenWidth = screenWidth;
 		_screenHeight = screenHeight;
 		_orthoMatrix = glm::ortho(0.0f, (float)_screenWidth, 0.0f, (float)_screenHeight);
+		//_orthoMatrix = glm::ortho(-_screenWidth / 2.0f, _screenWidth / 2.0f, -_screenHeight / 2.0f, _screenHeight / 2.0f, -1.0f, 1.0f);
+
 	}
 
 	void Camera2D::update() {
@@ -37,4 +39,23 @@ namespace Bengine {
 			_updated = true;
 		}
 	}
+
+	glm::vec2 Camera2D::screenToWorldCoords(glm::vec2 screenCoords) {
+		// Invert Y axis
+		//screenCoords.y = _screenHeight - screenCoords.y;
+		// Change the coords so that the top left is -screenHeight/2 and the bottom right is screenHeight/2
+		// Make it so that 0 is the center
+		screenCoords -= glm::vec2(_screenWidth / 2, _screenHeight / 2);
+		// Scale the coordinates
+		screenCoords /= _scale;
+		// Translate with the camera position
+		screenCoords += _position;
+
+		return screenCoords;
+	}
+	void Camera2D::move(glm::vec2 movement) {
+
+
+	}
+
 }

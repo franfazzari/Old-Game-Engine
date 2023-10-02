@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{08106eaf-1abb-4a99-8390-0500d2cc155a}</ProjectGuid>
-    <RootNamespace>Game</RootNamespace>
+    <ProjectGuid>{eaeb0e34-f988-4b6c-ab98-ec5be451a523}</ProjectGuid>
+    <RootNamespace>ZombieGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Fazzo\Desktop\glm\glm;C:\Users\Fazzo\Desktop\SDL2_image-2.6.3\include;C:\Users\Fazzo\Desktop\glew-2.1.0\include;C:\Users\Fazzo\Desktop\SDL2-2.26.4\include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Fazzo\source\repos\Game\x64\Debug;C:\Users\Fazzo\Desktop\SDL2_image-2.6.3\lib\x64;C:\Users\Fazzo\Desktop\glew-2.1.0\lib\Release\x64;C:\Users\Fazzo\Desktop\SDL2-2.26.4\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Fazzo\Desktop\glm\glm;C:\Users\Fazzo\Desktop\SDL2_image-2.6.3\include;C:\Users\Fazzo\Desktop\glew-2.1.0\include;C:\Users\Fazzo\Desktop\SDL2-2.26.4\include;C:\Users\Fazzo\source\repos\Game\;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\atlmfc\include;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\Include\um;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Fazzo\source\repos\Game\x64\Debug;C:\Users\Fazzo\Desktop\glew-2.1.0\lib\Release\x64;C:\Users\Fazzo\Desktop\SDL2-2.26.4\lib\x64;C:\Users\Fazzo\Desktop\SDL2_image-2.6.3\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,11 +113,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;glu32.lib;Bengine.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ShowProgress>NotSet</ShowProgress>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Latest|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -135,12 +133,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Human.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="Agent.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Zombie.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Human.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="Agent.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Zombie.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

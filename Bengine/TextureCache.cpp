@@ -25,12 +25,10 @@ GLTexture TextureCache::getTexture(std::string texturePath) {
 		// Insert the new texture into the map
 		_textureMap.insert(make_pair(texturePath, newTexture));
 
-		std::cout << "Used Cached Texture!\n";
 		return newTexture;
 	}
 	else {
 
-		std::cout << "Loaded Texture\n";
 		// If the texture is already loaded we want to return the texture
 		return mit->second;
 	}

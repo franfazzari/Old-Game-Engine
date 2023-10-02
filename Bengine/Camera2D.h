@@ -12,8 +12,11 @@ namespace Bengine {
 
 		void update();
 
+		glm::vec2 screenToWorldCoords(glm::vec2 screenCoords);
+
 		// setters
 		void setPosition(const glm::vec2& newPosition) { _position = newPosition; _updated = false; }
+		void move(const glm::vec2 movement);
 		void setScale(float newScale) { _scale = newScale; _updated = false; }
 
 		// getters

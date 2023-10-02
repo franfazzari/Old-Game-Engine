@@ -2,48 +2,60 @@
 #include <Bengine/Bengine.h>
 
 
-
-
-MainGame::MainGame(): 
+MainGame::MainGame() :
 	_time(0.0f),
 	_gameState(GameState::PLAY),
-	_maxFPS(60.0f)
+	_maxFPS(60.0f),
+	_fps(0),
+	_objects(1)
 {
+	// TODO
 	_camera.init(_screenWidth, _screenHeight);
+	;
 }
 
 MainGame::~MainGame() {
-
+	//TODO
+	for (int i = 0; i < _levels.size(); i++) {
+		delete(_levels[i]);
+	}
 }
 
-// Main game run function
 void MainGame::run() {
+	//TODO
 	initSystems();
-
-	// Set the camera position otherwise it loads wrong, not sure why
-	_camera.setPosition(glm::vec2(0.0f, 0.0f));
-
-
 	gameLoop();
+
 }
 
 void MainGame::initSystems() {
+	//TODO
+
 	Bengine::init();
 
 	// Initialize the window
-	_window.createWindow("Game Engine", _screenWidth, _screenHeight, 0); 
+	_window.createWindow("Zombie Game", _screenWidth, _screenHeight, 0);
+	glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
 
 	// Initialize shaders
 	initShaders();
+
+	_camera.init(_screenWidth, _screenHeight);
+
+	//Level 1
+	_levels.push_back(new Level("Levels/level1.txt"));
+	_currentLevel = 0;
 
 	// Initialize spriteBatch
 	_spriteBatch.init();
 
 	// Initialize FPSLimiter
 	_fpsLimiter.init(_maxFPS);
+
 }
 
 void MainGame::initShaders() {
+	//TODO
 	_colorProgram.compileShaders("Shaders/colorShading.vert", "Shaders/colorShading.frag");
 	_colorProgram.addAttribute("vertexPosition");
 	_colorProgram.addAttribute("vertexColor");
@@ -51,114 +63,66 @@ void MainGame::initShaders() {
 	_colorProgram.linkShaders();
 }
 
-// Main game drawing to screen function 
 void MainGame::drawGame() {
-	// Clear the screen 
-	glClearDepth(1.0);
+	//TODO
+	// Clear the screen
+	glClearDepth(1.0f);
 	// Clear the screen and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Enable the shader
+	// Bind the shaders
 	_colorProgram.use();
 
-	// We are using the texture unit 0
-	glActiveTexture(GL_TEXTURE0);
-	// Get the uniform location
-	GLint textureLocation = _colorProgram.getUniformLocation("mySampler");
-	// Tell the shader that the texture is in texture unit 0
-	glUniform1i(textureLocation, 0);
 
-	// Setting up the uniform
-	
+	// Make sure the shader uses texture 0
+	GLint textureUniform = _colorProgram.getUniformLocation("mySampler");
+	glUniform1i(textureUniform, 0);
 
-	// Setting the camera matrix uniform
-	GLuint pLocation = _colorProgram.getUniformLocation("P");
-	glm::mat4 cameraMatrix = _camera.getCameraMatrix();
-	cameraMatrix[1][1] *= -1.0f;
+	// Grab the camera matrix
+	glm::mat4 projectionMatrix = _camera.getCameraMatrix();
+	GLint pUniform = _colorProgram.getUniformLocation("P");
+	glUniformMatrix4fv(pUniform, 1, GL_FALSE, &projectionMatrix[0][0]);
 
-	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
+	// Draw the level
+	_levels[_currentLevel]->draw();
 
-	_spriteBatch.begin();
-	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
-	glm::vec4 pos(0.0f,0.0f, 50.0f, 50.0f);
-
-	static GLTexture texture = ResourceManager::getTexture("Textures/PNG/stone.png");
-	if (texture.id == 0) {
-		while (true) {
-
-		}
-	}
-	Color color;
-	color.r = 255;
-	color.g = 255;
-	color.b = 255;	
-	color.a = 255;
-
-	_spriteBatch.draw(pos,uv, texture.id, 0.0f, color);
-
-	//Draw my bullets
-	for (int i = 0; i < _bullets.size(); i++) {
-		_bullets[i].draw(_spriteBatch);
-	}
-
-	_spriteBatch.end();
-
-	_spriteBatch.renderBatch();
-
-	// Unbind the texture
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// Disable the shader
+	// Unbind the shader
 	_colorProgram.unuse();
 
-	// Swap the buffer window and draw everything to screen!
 	_window.swapBuffer();
-
 }
 
-// Main game loop function
 void MainGame::gameLoop() {
+	//TODO
 
 	// Will loop until we set _gameState to EXIT
 	while (_gameState != GameState::EXIT) {
 		// Use for frame time measuring
+		
+		_fpsLimiter.setMaxFPS(60.0f);
 		_fpsLimiter.begin();
 
 		processInput();
-		_time += 0.01;
+		_time += 0.01f;
 
 		_camera.update();
 
-		// Update the bullets
-		for (int i = 0; i < _bullets.size();) {
-			if (_bullets[i].update() == true) {
-				_bullets[i] = _bullets.back();
-				_bullets.pop_back();
-			}
-			else {
-				i++;
-			}
-		}
-
+		// Draw my game
 		drawGame();
 
 		_fps = _fpsLimiter.end();
 
-		// Print once every 10 frames
-		static int frameCounter = 0;
-		frameCounter++;
-		if (frameCounter == 10000) {
-			std::cout << _fps << std::endl;
-			frameCounter = 0;
-		}
 	}
 }
 
-// Main game process inputs function
 void MainGame::processInput() {
-
+	//TODO
+	
 	// Camera speed indicator
 	const float CAMERA_SPEED = 5.0f;
+
+	// Player speed indicator
+	const float PLAYER_SPEED = 5.0f;
 	
 	// Camera scale speed indicator
 	const float SCALE_SPEED = 0.1f;
@@ -168,36 +132,40 @@ void MainGame::processInput() {
 
 	// Event handler
 	SDL_Event e;
-	
-	// While application is running
-	while (SDL_PollEvent(&e)) {
 
+	// While the application is running
+	while (SDL_PollEvent(&e)) {
+		
 		switch (e.type) {
-		// Check for user exit
+
+			// Check for user exit
 		case SDL_QUIT:
 			_gameState = GameState::EXIT;
 			break;
 
-		// Check for user mouse movement
+			// Check for user mouse usage
 		case SDL_MOUSEMOTION:
 			_inputManager.setMouseCoords(e.motion.x, e.motion.y);
-			//std::cout << e.motion.x << " " << e.motion.y << std::endl;
 			break;
-		case SDL_KEYDOWN:
-			_inputManager.pressKey(e.key.keysym.sym);
-			break;
-		case SDL_KEYUP:
-			_inputManager.releaseKey(e.key.keysym.sym);
-			break; 
 		case SDL_MOUSEBUTTONDOWN:
 			_inputManager.pressKey(e.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			_inputManager.releaseKey(e.button.button);
 			break;
+			
+			// Check for button use
+		case SDL_KEYDOWN:
+			_inputManager.pressKey(e.key.keysym.sym);
+			break;
+		case SDL_KEYUP:
+			_inputManager.releaseKey(e.key.keysym.sym);
 		}
 	}
-	
+
+	// Different key cases
+
+	// Handle movement of player and camera at the same time
 	if (_inputManager.isKeyPressed(SDLK_w)) {
 		_camera.setPosition(_camera.getPosition() + glm::vec2(0.0f, CAMERA_SPEED));
 	}
@@ -220,12 +188,13 @@ void MainGame::processInput() {
 		glm::vec2 mouseCoords = _inputManager.getMouseCoords();
 		mouseCoords = _camera.screenToWorldCoords(mouseCoords);
 		std::cout << mouseCoords.x << " " << mouseCoords.y << std::endl;
-
 		glm::vec2 playerPosition(0.0f);
 		glm::vec2 direction = mouseCoords - playerPosition;
 		direction = glm::normalize(direction);
 
-		_bullets.emplace_back(playerPosition, direction, 5.01f, 1000);
+		_bullets.emplace_back(playerPosition, direction, 5.0f, 1000);
 
 	}
+
+
 }

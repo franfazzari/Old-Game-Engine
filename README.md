@@ -32,12 +32,44 @@ A custom game engine built from scratch in C++ as a learning project to understa
 - Graphics drivers supporting OpenGL
 
 ### Build Steps
+## 1. Install vcpkg
 
-```bash
-# Clone the repository
+If you don't have vcpkg installed:
+
+```powershell
+# Clone vcpkg to C:\vcpkg
+cd C:\
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+```
+
+## 2. Install Dependencies
+
+Install the required libraries using vcpkg:
+
+```powershell
+cd C:\vcpkg
+.\vcpkg install sdl2:x64-windows
+.\vcpkg install glew:x64-windows
+.\vcpkg install glm:x64-windows
+.\vcpkg install sdl2-image:x64-windows
+```
+
+You should see:
+- `sdl2:x64-windows`
+- `glew:x64-windows`
+- `glm:x64-windows`
+- `sdl2-image:x64-windows`
+
+## 3. Clone and Build the Project
+
+```powershell
 git clone https://github.com/franfazzari/Old-Game-Engine.git
 cd Old-Game-Engine
-# make
+```
+
+Open `Old-Game-Engine.sln` in Visual Studio 2022.
 
 ```
 ## What I Learned

@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Bengine/Errors.h"
 
-#define TILE_WIDTH = 50;
+#define TILE_WIDTH  50
 
 Level::Level(const std::string& fileName) {
 

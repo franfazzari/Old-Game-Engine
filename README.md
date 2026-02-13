@@ -37,12 +37,6 @@ A custom game engine built from scratch in C++ as a learning project to understa
 # Clone the repository
 git clone https://github.com/franfazzari/Old-Game-Engine.git
 cd Old-Game-Engine
-
-# [Add your specific build commands here]
-# Example:
-# mkdir build
-# cd build
-# cmake ..
 # make
 
 ```
